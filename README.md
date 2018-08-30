@@ -1,4 +1,4 @@
-# element-bd2
+# jyplus-front
 
 > A Vue.js project
 
