@@ -4,9 +4,11 @@ import PhHome from '@/components/ph-home'
 import PhDeal from '@/components/ph-deal'
 import PhNews from '@/components/ph-news'
 import PhTrouble from '@/components/ph-trouble-cash'
-import PhWiki from '@/components/ph-wiki'
+import PhWiki from '@/components/wiki/ph-wiki'
 import PhHeytea from '@/components/ph-heytea'
 import PhTroubleBond from '@/components/ph-trouble-bond'
+
+// import store from './vuex/store'
 
 Vue.use(Router)
 

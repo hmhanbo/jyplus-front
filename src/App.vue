@@ -10,22 +10,25 @@
 </template>
 
 <script>
-
+  import store from './vuex/store'
   import PhNavMenu from './components/ph-navmenu.vue'
-
 
   export default {
     name: 'app',
     components: {PhNavMenu},
+    store,
 
   }
 
-
-
 </script>
 
-<style>
+<style lang="stylus">
 #app {
+/*此处引用css文件*/
+@import '~simplemde/dist/simplemde.min.css';
+@import '~highlight.js/styles/atom-one-dark.css';
+// @import '~github-markdown-css';
+
   /*font-family: 'Avenir', Helvetica, Arial, sans-serif;*/
   /*-webkit-font-smoothing: antialiased;*/
   /*-moz-osx-font-smoothing: grayscale;*/

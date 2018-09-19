@@ -3,16 +3,20 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import store from './store'
+
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-
-// import marked from './marked'
-
+import VueSimplemde from 'vue-simplemde'
+import 'simplemde/dist/simplemde.min.css'
+import mavonEditor from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
 
 Vue.use(ElementUI);
 // Vue.use(marked)
 Vue.config.productionTip = false;
+
+Vue.use(VueSimplemde);
+Vue.use(mavonEditor);
 
 
 /* eslint-disable no-new */
@@ -20,7 +24,6 @@ Vue.config.productionTip = false;
 new Vue({
   el: '#app',
   // render: h => h(App),
-  store,
   router,
   components: {
     App
