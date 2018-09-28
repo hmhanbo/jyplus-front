@@ -10,14 +10,11 @@
 </template>
 
 <script>
-  import store from './vuex/store'
   import PhNavMenu from './components/ph-navmenu.vue'
 
   export default {
     name: 'app',
     components: {PhNavMenu},
-    store,
-
   }
 
 </script>
@@ -34,7 +31,6 @@
   /*-moz-osx-font-smoothing: grayscale;*/
   text-align: left;
   color: #2c3e50;
-  margin-top: 60px;
-  margin-left: 30px;
+
 }
 </style>

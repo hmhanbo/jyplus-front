@@ -1,136 +1,90 @@
 /**
  * Created by chuck7 on 16/9/7.
  */
-/* 封装fetch */
-// import store from '../vuex/store'
-// // import {deleteToken} from '../vuex/actions/token'
-// function parseResponse (response) {
-//   return Promise.all([response.status,response.statusText, response.json()])
-// }
-// function checkStatus ([status,statusText,data]) {
-//   if(status >= 200 && status < 300){
-//     return data;
-//   }else{
-//     if(401 === status ){
-//       if('token expired' === data.error){
-//         alert('token已过期,请注意内容保存,并重新登录');
-//       }else if('invalid token' === data.error){
-//         deleteToken(store);
-//       }
-//     }
-//     let error = new Error(statusText);
-//     error.status = status;
-//     error.error_message = data;
-//     return Promise.reject(error);
-//   }
-// }
+import axios from 'axios'
+import qs from 'qs'
 
-// export default{
-//   get (url, param = {}, headers = {}, host = process.env.api) {
-//     let reqHeaders = new Headers(headers)
-//     reqHeaders.append('Accept', 'application/json');
-//     if(null !== store.state.token.token){
-//       reqHeaders.append('Authorization','Bearer '+store.state.token.token)
-//     }
-//     var query = []
-//     Object.keys(param).forEach((item) => {
-//       query.push(`${item}=${encodeURIComponent(param[item])}`)
-//     })
-//     var params = query.length ? '?' + query.join('&') : ''  // fixme
-//     url = host + url + params
-//     console.log(url, params)
-//     var init = {
-//       method: 'GET',
-//       headers: reqHeaders,
-//       credentials:"include",
-//       cache: 'default',
-//       mode:'cors'
-//     }
-//     return fetch(url, init)
-//       .then(parseResponse)
-//       .then(checkStatus)
-//   },
-//   patch (url, param = {}, headers = {}, host = process.env.api) {
-//     let reqHeaders = new Headers(headers)
-//     reqHeaders.append('Content-Type', 'application/json')
-//     reqHeaders.append('Accept', 'application/json')
-//     if(null !== store.state.token.token){
-//       reqHeaders.append('Authorization','Bearer '+store.state.token.token)
-//     }
-//     url = host + url
 
-//     var init = {
-//       method: 'PATCH',
-//       headers: reqHeaders,
-//       credentials:"include",
-//       mode:'cors',
-//       body: JSON.stringify(param)
-//     }
+axios.interceptors.request.use(config => {
+  // loading
+  return config
+}, error => {
+  return Promise.reject(error)
+})
 
-//     return fetch(url, init)
-//       .then(parseResponse)
-//       .then(checkStatus)
-//   },
-//   post (url, param = {}, headers = {}, host = process.env.api) {
-//     let reqHeaders = new Headers(headers)
-//     reqHeaders.append('Content-Type', 'application/json');
-//     reqHeaders.append('Accept', 'application/json');
-//     if(null !== store.state.token.token){
-//       reqHeaders.append('Authorization','Bearer '+store.state.token.token)
-//     }
-//     url = host + url
-//     var init = {
-//       method: 'POST',
-//       headers: reqHeaders,
-//       credentials:"include",
-//       mode:'cors',
-//       body: JSON.stringify(param)
-//     }
+axios.interceptors.response.use(response => {
+  return response
+}, error => {
+  return Promise.resolve(error.response)
+})
 
-//     return fetch(url, init)
-//       .then(parseResponse)
-//       .then(checkStatus)
-//   },
-//   put (url, param = {}, headers = {}, host = process.env.api) {
-//     let reqHeaders = new Headers(headers)
-//     reqHeaders.append('Content-Type', 'application/json')
-//     reqHeaders.append('Accept', 'application/json')
-//     if(null !== store.state.token.token){
-//       reqHeaders.append('Authorization','Bearer '+store.state.token.token)
-//     }
-//     url = host + url
+function checkStatus (response) {
+  // loading
+  // 如果http状态码正常，则直接返回数据
+  if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
+    return response
+    // 如果不需要除了data之外的数据，可以直接 return response.data
+  }
+  // 异常状态下，把错误信息返回去
+  return {
+    status: -404,
+    msg: '网络异常'
+  }
+}
 
-//     var init = {
-//       method: 'PUT',
-//       headers: reqHeaders,
-//       credentials:"include",
-//       mode:'cors',
-//       body: JSON.stringify(param)
-//     }
+function checkCode (res) {
+  // 如果code异常(这里已经包括网络错误，服务器错误，后端抛出的错误)，可以弹出一个错误提示，告诉用户
+  if (res.status === -404) {
+    alert(res.msg)
+  }
+  // if (res.data && (!res.data.success)) {
+  //   alert(res.data.error_msg)
+  // }
+  return res
+}
 
-//     return fetch(url, init)
-//       .then(parseResponse)
-//       .then(checkStatus)
-//   },
-//   delete (url, param = {}, headers = {}, host = process.env.api) {
-//     let reqHeaders = new Headers(headers)
-//     reqHeaders.append('Content-Type', 'application/json')
-//     reqHeaders.append('Accept', 'application/json')
-//     if(null !== store.state.token.token){
-//       reqHeaders.append('Authorization','Bearer '+store.state.token.token)
-//     }
-//     url = host + url
-
-//     var init = {
-//       method: 'DELETE',
-//       credentials:"include",
-//       headers: reqHeaders,
-//       mode:'cors'
-//     }
-
-//     return fetch(url, init)
-//       .then(parseResponse)
-//       .then(checkStatus)
-//   }
-
-// }
+export default {
+  post (url, data) {
+    return axios({
+      method: 'post',
+      baseURL: 'https://localhost:8080',
+      url,
+      data: qs.stringify(data),
+      timeout: 10000,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      }
+    }).then(
+      (response) => {
+        return checkStatus(response)
+      }
+    ).then(
+      (res) => {
+        return checkCode(res)
+      }
+    )
+  },
+  get (url, params={}) {
+    console.log(url)
+    return axios({
+      method: 'get',
+      baseURL: 'http://localhost:8080',
+      url,
+      params, // get 请求时带的参数
+      timeout: 10000,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    }).then(
+      (response) => {
+        console.log(response)
+        return checkStatus(response)
+      }
+    ).then(
+      (res) => {
+        return checkCode(res)
+      }
+    )
+  }
+}

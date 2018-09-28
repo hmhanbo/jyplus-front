@@ -2,45 +2,46 @@
  * Created by chuck7 on 16/9/14.
  */
 
-//写axios
-
-// import api from '../index.js';
+import api from '../index.js';
 export default {
   getDraftList(tag){
     let queryObj = undefined;
     if(undefined !== tag){
       queryObj = {tag};
     }
-    return queryObj;
+    return api.get('drafts',queryObj);
   },
   getDraft(id){
-    return 'drafts/'+id;
+    return api.get('drafts/'+id);
   },
   modifyDraftContent(id,content){
-    return 'drafts/'+id,{content};
+    return api.patch('drafts/'+id,{content});
   },
   modifyDraftTitle(id,title){
-    return 'drafts/'+id,{title};
+    return api.patch('drafts/'+id,{title});
   },
   modifyDraftTags(id,tags){
-    return 'drafts/'+id,{tags};
+    return api.patch('drafts/'+id,{tags});
   },
   createTags(tagName){
-    return 'tags',{name:tagName};
+    return api.post('tags',{name:tagName})
   },
   getAllTags(){
-    return 'tags';
+    return api.get('tags');
   },
   createDraft(title){
-    return 'drafts',{title:title};
+    return api.post('drafts',{title:title})
   },
   publish(id){
-    return 'publications',{draftId:id};
+    return api.post('publications',{draftId:id})
   },
   deleteDraft(id){
-    return 'drafts/'+id;
+    return api.delete('drafts/'+id)
   },
   searchTagWithWord(keyword){
-    return 'tags',{'start-with':keyword};
+    return api.get('tags',{'start-with':keyword})
+  },
+  getPost(id){
+    return api.get(`wiki/post/${id}`)
   }
 };

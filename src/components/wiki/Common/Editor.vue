@@ -1,59 +1,93 @@
 <template>
   <div>
-    <textarea id="editor" style="opacity: 0"></textarea>
-  </div>
+        <mavon-editor 
+        :editable = "true"
+        :toolbarsFlag = "true"
+        :scrollStyle = "true"
+        @htmlCode ="mavon_htmlCode"
+        @save="save"
+        @imgAdd="mavon_imgAdd"
+        v-model="textareaValue">
+        </mavon-editor>
+    </div>
+
 </template>
+
 <script>
-  import {marked} from '../../../lib/utils'
-  import SimpleMDE from 'simplemde'
-  let smde;
-  export default{
-    data(){
-      return{
-      }
+  import md2text from '../../../filters/md2text.js'
+  import {mavonEditor} from 'mavon-editor'
+  import axios from 'axios'
+  const _this = this;
+
+  export default {
+    components: {
+    
     },
     props:{
-      content:{
-        type:String,
-        required: true,
-        twoWay: true
+      value:""
+    },
+    data() {
+      return {
+        textareaValue: this.value
       }
     },
-    ready(){
-      smde = new SimpleMDE({
-        initialValue:this.content,
-        autoDownloadFontAwesome:false,
-        element: document.getElementById('editor'),
-        previewRender: function(plainText) {
-          return marked(plainText); // Returns HTML from a custom parser
-        },
-        spellChecker:false
-      });
-      smde.codemirror.on("change", ()=>{
-        let value = smde.value();
-        if(this.content === value){
-          return
+
+    methods:{
+      mavon_htmlCode(b,s){
+        console.log(b)
+        console.log(s)
+        // console.log(md2text(s))          
+      },
+      save(value,render){
+        // axios({
+        //   url:'http://localhost:8080/#/wiki/',
+        //   method:'post',
+        //   data: value,
+        // }).then((value)={
+        //   // this.textareaValue=this.value
+        // });
+
+        this.$emit("parent-save", value)
+          console.log(value);
+          // console.log(render);
+      },
+      mavon_imgAdd(pos, $file){
+            // 第一步.将图片上传到服务器.
+           var formdata = new FormData();
+           formdata.append('image', $file);
+           axios({
+               url: 'server url',
+               method: 'post',
+               data: formdata,
+               headers: { 'Content-Type': 'multipart/form-data' },
+           }).then((url) => {
+               // 第二步.将返回的url替换到文本原位置![...](0) -> ![...](url)
+               /**
+               * $vm 指为mavonEditor实例，可以通过如下两种方式获取
+               * 1. 通过引入对象获取: `import {mavonEditor} from ...` 等方式引入后，`$vm`为`mavonEditor`
+               * 2. 通过$refs获取: html声明ref : `<mavon-editor ref=md ></mavon-editor>，`$vm`为 `this.$refs.md`
+               */
+               mavonEditor.$img2Url(pos, url);
+           })
         }
-        this.content = value;
-      })
     },
-    beforeDestroy(){
-      smde.toTextArea();
-      let editor = document.getElementById('editor');
-      editor.outerHTML = editor.outerHTML;
-    },
-    watch:{
-      content(val){
-        if('' !== val){
-          this.$nextTick(()=>{
-            if(smde){
-              if(val !== smde.value()){
-                smde.value(val);
-              }
-            }
-          })
+    watch: {
+      value(val) {
+        this.textareaValue = val;
+      },
+      textareaValue(val){
+
+            this.$emit("on-result-change",val);//③组件内对myResult变更后向外部发送事件通知
         }
-      }
+    },
+
+    computed:{
     },
   }
+
+
+ 
 </script>
+
+<style>
+</style>

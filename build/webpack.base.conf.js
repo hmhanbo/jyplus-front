@@ -27,6 +27,7 @@ module.exports = {
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src'),
+      // 'vue': 'vue/dist/vue.js',//https://segmentfault.com/q/1010000009003179/
     }
   },
   module: {

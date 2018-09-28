@@ -1,19 +1,21 @@
 import Vue from 'vue'
-import Router from 'vue-router'
+import VueRouter from 'vue-router'
 import PhHome from '@/components/ph-home'
-import PhDeal from '@/components/ph-deal'
+import PhDeal from '@/components/deal/ph-deal'
 import PhNews from '@/components/ph-news'
-import PhTrouble from '@/components/ph-trouble-cash'
-import PhWiki from '@/components/wiki/ph-wiki'
+import PhTrouble from '@/components/trouble/ph-trouble-cash'
+import Wiki from '@/components/wiki/Wiki'
+import Edit from '@/components/wiki/Edit'
 import PhHeytea from '@/components/ph-heytea'
-import PhTroubleBond from '@/components/ph-trouble-bond'
-
+import PhTroubleBond from '@/components/trouble/ph-trouble-bond'
 // import store from './vuex/store'
 
-Vue.use(Router)
+Vue.use(VueRouter)
 
 // 1、导入组件，2、配置路由
-export default new Router({
+
+
+export default new VueRouter({
   routes: [
     {
       path: '/',
@@ -32,13 +34,20 @@ export default new Router({
     },
     {
       path: '/trouble-cash',
-      name: 'trouble-cash',
-      component: PhTrouble
+      component: PhTrouble,
+      children:[
+        {path:'/bond',component:PhTroubleBond},
+        {path:'/cash',component:PhTrouble},
+      ]
     },
     {
-      path: '/wiki',
+      path: '/wiki/:id?',
       name: 'wiki',
-      component: PhWiki
+      component: Wiki
+    },
+    {
+      path:'/edit',
+      component:Edit,
     },
     {
       path: '/heytea',
@@ -50,5 +59,5 @@ export default new Router({
       name: 'trouble-bond',
       component: PhTroubleBond
     }
-  ]
+  ],
 })
