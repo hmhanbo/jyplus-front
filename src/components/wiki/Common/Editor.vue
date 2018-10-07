@@ -48,7 +48,7 @@
         // });
 
         this.$emit("parent-save", value)
-          console.log(value);
+          // console.log(value);
           // console.log(render);
       },
       mavon_imgAdd(pos, $file){

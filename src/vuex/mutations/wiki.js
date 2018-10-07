@@ -86,16 +86,6 @@ export default {
     state.yinxdetWidth = true;
   },
 
-  //Home组件展开 显示完成按钮
-  openHander(state) {
-    state.unfoldShow = true;
-  },
-  //Home组件收起, 显示展开图标   // 隐藏笔记信息组件
-  closeHander(state) {
-    state.unfoldShow = false;
-    state.information = false;
-    state.navState = 1;
-  },
 
   //当点击textarea 和 title区域,隐藏快捷方式栏
   closeQuickbox(state) {
@@ -108,8 +98,6 @@ export default {
     }
     state.navState = 1;
   },
-
-  
 
   //笔记列表删除完了
   deleteAll(state) {
@@ -146,23 +134,10 @@ export default {
     state.noteContent = obj;
   },
 
-  // 消息弹窗状态
-  closeMessageHander(state) {
-    state.messageShow = false;
-  },
 
   //修改navState
   changeNavState(state, index) {
     state.navState = index;
   },
 
-  //点击快捷方式的详细信息,隐藏Home组件笔记列表
-  noteListshow(state){
-    state.dataListShow = false;
-  },
-  // 让笔记本列表盒模型显示出来
-  noteListTrue(state){
-    state.dataListShow = true;
-    state.yinxdetWidth = false;
-  },
 }

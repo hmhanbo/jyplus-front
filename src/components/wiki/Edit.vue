@@ -43,7 +43,6 @@
 
             editOk:false,   //完成图标显示
 
-
             beginTime:'', //当前笔记创建时间
           }
         },

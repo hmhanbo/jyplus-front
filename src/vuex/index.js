@@ -14,7 +14,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state:{ 
     dataList: [], //数据列表
-    // allList: [], // 所有的笔记列表
+    allList: [], // 所有的笔记列表
     noteContent: {}, //Home组件展示的数据对象
   
     /*------删除------*/

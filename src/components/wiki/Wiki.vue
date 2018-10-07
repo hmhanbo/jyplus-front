@@ -4,7 +4,7 @@
       <el-aside width="300px" style="background-color: rgb(238, 241, 246)">
         <el-header style="text-align: right; font-size: 12px">
           <router-link tag="div" to="/edit" class="newnotes" @mouseover.native="overxJ" @mouseout.native="outxJ">
-            <i :class="xJ == true ? 'el-icon-circle-plus-outline' : 'el-icon-circle-plus'" alt="" title="新建笔记"></i>
+            <i :class="xJShow == true ? 'el-icon-circle-plus-outline' : 'el-icon-circle-plus'" alt="" title="新建笔记"></i>
           </router-link>
         </el-header>
 
@@ -12,7 +12,6 @@
         <div>
           <div>{{allNoteList.length}} 条文档</div>
         </div>
-
 
         <router-link tag="div" v-for="(item, index) in allNoteList" :key="item.id" :to="/wiki/+item.id" @click.native="state=item.id"
           :class="state == item.id ? 'sel' : ''" v-show="!$store.state.notelistNumber">
@@ -36,14 +35,18 @@
           <div class="article">
             <el-row>
               <el-col :span="18">
-                <div class="grid-content bg-purple-dark">
+                <div v-if="!mavonEditorShow">
                   {{titleValue}}
                 </div>
+                <div v-if="mavonEditorShow">
+                  <input type="text" v-model="titleValue" class="editValue">
+                </div>
+
               </el-col>
               <el-col :span="6">
                 <div class="grid-content bg-purple-light">
                   <el-button @click="md_htmlCode">导出html</el-button>
-                  <el-button @click="()=>{mavonEditorshow =!mavonEditorshow}">切换编辑</el-button>
+                  <el-button @click="()=>{mavonEditorShow =!mavonEditorShow}">切换编辑</el-button>
                 </div>
               </el-col>
             </el-row>
@@ -51,24 +54,18 @@
               <input type="text" v-model="titleValue" class="editValue">
             </div> -->
 
-            <div class="markdown-body" v-if="!mavonEditorshow">
+            <div class="markdown-body" v-if="!mavonEditorShow">
               <area shape="" coords="" href="" alt="">
               <!-- <textarea v-model="textareaValue"></textarea>  -->
               <div v-html="textareaValue_md"></div>
             </div>
-            <textarea v-model="textareaValue"></textarea> 
-            <textarea v-model="textareaValue"></textarea> 
-            <editor  :value="textareaValue" v-if="mavonEditorshow"
-            @on-result-change="onResultChange"
-            @parent-save="mavonSave"></editor>
-
+              <editor  :value="textareaValue" v-if="mavonEditorShow"
+              @on-result-change="onResultChange"
+              @parent-save="mavonSave"></editor>
           </div>
         </el-main>
       </el-container>
-
     </el-container>
-<!-- <ve-line :data="chartData" :settings="chartSettings"></ve-line> -->
-
   </div>
 </template>
 
@@ -83,23 +80,7 @@
       Editor
     },
     data() {
-      this.chartSettings = {
-        axisSite: { right: ['下单率'] },
-        yAxisType: ['KMB', 'percent'],
-        yAxisName: ['数值', '比率']
-      }
       return {
-        chartData: {
-          columns: ['日期', '访问用户', '下单用户', '下单率'],
-          rows: [
-            { '日期': '1/1', '访问用户': 1393, '下单用户': 1093, '下单率': 0.32 },
-            { '日期': '1/2', '访问用户': 3530, '下单用户': 3230, '下单率': 0.26 },
-            { '日期': '1/3', '访问用户': 2923, '下单用户': 2623, '下单率': 0.76 },
-            { '日期': '1/4', '访问用户': 1723, '下单用户': 1423, '下单率': 0.49 },
-            { '日期': '1/5', '访问用户': 3792, '下单用户': 3492, '下单率': 0.323 },
-            { '日期': '1/6', '访问用户': 4593, '下单用户': 4293, '下单率': 0.78 }
-          ]
-        },
         allNoteList: [], //全部的笔记
         noteContent: {}, // title 和 textarea展示内容的对象  也是Home组件消息弹窗的数据
         titleValue: '', //标题
@@ -118,28 +99,28 @@
         count: [], //保存标签数据
         editTagShow: false, //自定义标签输入框的显示隐藏
 
-        kJshow: false, //快捷方式显示隐藏
-        tkJshow: false, //顶部快捷方式显示隐藏
-        sCshow: false, //删除图标显示和隐藏
         delNextId: 1, //删除对象下一个兄弟的id
 
         searchValue: '', //搜索关键字
         open: true,
         messageState: false, // 弹窗显隐
 
-        xJ: true, //新建显隐
-
-        mavonEditorshow: false,
+        xJShow: true, //新建显隐
+        mavonEditorShow: false,
       }
     },
 
     methods: {
-      mavonSave(val){
+      mavonSave(){
+        // [this.$route.params.id]
+        this.synchronous();
+        let saveObj = this.allNoteList.filter(item => item.id == this.$route.params.id)[0]
+        console.log(saveObj)
           axios({
-            url:'http://localhost:8080/wiki/' + this.$route.params.id,
+            url:'http://localhost:8080/wiki/update',
             method:'post',
-            data: val,
-          }).then((val)={
+            data: saveObj,
+          }).then(()=>{
             // this.textareaValue=this.value
           })
       },
@@ -163,9 +144,12 @@
 
         // this.EditTitle === '' || this.EditTextarea === '' &&
         // console.log(this.EditTitle !== changeObj.title && this.EditTextarea !== changeObj.content);
+        // 将EditTextarea传入state.allList
         if (changeObj) {
           if (this.EditId !== '' && (this.EditTitle != changeObj.title || this.EditTextarea != changeObj.content)) {
             // 提交vuex 修改数据
+            console.log(this.allNoteList[1].content)
+            console.log(this.EditTextarea)
             this.$store.commit('editChange', {
               id: this.EditId,
               title: this.EditTitle,
@@ -182,10 +166,16 @@
         this.$api.getList().then(({
           data
         }) => {
-          this.$store.dispatch('success', data);
-          localStorage.setItem('wiki', JSON.stringify(data));
+          // var data_line = JSON.parse(JSON.stringify({"data": data}).replace("\\n", "\n"))
+          // console.log(JSON.stringify({"data": data}).replace(/\\n/g,"\n"))
+          // let data_a = {"data": JSON.parse(JSON.stringify(data).replace(/\\n/g,"\n"))}
+          // console.log({"data": JSON.parse(JSON.stringify(data).replace(/\\n/g,"\n"))})
+          this.$store.dispatch('success', {"data": data});
+          // JSON.stringify({"data": data}).replace("\\n", "\n")
+          localStorage.setItem('wiki', JSON.stringify({"data":data}));
         }).then(() => {
           // 请求成功之后
+          console.log('getList')
           this.allNoteList = this.$store.state.allList; //全部的笔记
           this.initContent();
           // this.getDateTimes.getDateTimes.call(this,this.allNoteList);
@@ -220,11 +210,11 @@
         /*
          * 对笔记列表滚动条,以及笔记信息textarea 滚动条的整理
          * */
-        let editScroll = this.$refs.editScroll;
-        let homeScroll = this.$refs.homeScroll; //笔记列表滚动条
-        if (editScroll) {
-          editScroll.scrollTo(0, 0)
-        }
+        // let editScroll = this.$refs.editScroll;
+        // let homeScroll = this.$refs.homeScroll; //笔记列表滚动条
+        // if (editScroll) {
+        //   editScroll.scrollTo(0, 0)
+        // }
 
         // //判断 如果是点击了Home
         // if(this.$route.params.id === '11111111' && homeScroll){
@@ -240,7 +230,6 @@
             this.noteContent = n;
             this.titleValue = n.title;
             this.textareaValue = n.content;
-            this.Pid = n.pid; //单条笔记的pid
             this.$store.commit('notecontent', this.noteContent); //将当前展示的对象同步到vuex状态中
           } else {
             // 重定向
@@ -260,25 +249,23 @@
         // //选项列表数据
         // this.sortWay.sortWay.call(this,this.allNoteList);
 
-        // // 根据Pid过滤不同阶段的笔记
-        // // 在笔记本列表中过滤出与Pid一样的数据,就是当前显示数据的父亲
-        // /*
-        // * 路由更新,调用synchronous 同步数据
-        // * */
+        /*
+        * 路由更新,调用synchronous 同步数据
+        * */
         this.synchronous();
       },
       BlurFn() {
         //保存数据 提交mutations 修改当前对象的标签
       },
       overxJ() {
-        this.xJ = false;
+        this.xJShow = false;
       },
       outxJ() {
-        this.xJ = true;
+        this.xJShow = true;
       },
       md_htmlCode(b, s) {
-        console.log(b)
-        console.log(s)
+        // console.log(b)
+        // console.log(s)
 
         // console.log(md2text(s))          
       },
@@ -287,18 +274,6 @@
 
     computed: {
 
-      //搜索笔记
-      filterNoteBooks() {
-        return this.allNoteBook.filter(item => {
-          return item.title.trim().match(this.findNotes)
-        })
-      },
-      //tag输入框的动态宽度计算
-      tagWidth() {
-        return {
-          width: this.tagVal.length * 12 + 26 + 'px'
-        }
-      },
       textareaValue_md: function () {
         // console.log(this.textareaValue)
         return md2text(this.textareaValue)
