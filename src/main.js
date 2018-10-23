@@ -26,6 +26,9 @@ Vue.use($api);
 import VCharts from 'v-charts'
 Vue.use(VCharts)
 
+import dayjs from './assets/js/getDateTimes'
+Vue.use(dayjs);
+
 // import md2Text from './filters/md2text'
 
 // import marked from 'marked';

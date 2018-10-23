@@ -27,11 +27,10 @@
         <el-submenu index="3">
           <template slot="title">知识管理平台</template>
           <el-menu-item index="3-1">
-            <router-link class="router-link-active" to="/wiki">银行间资金</router-link>
+            <router-link class="router-link-active" to="/wiki">业务流程</router-link>
           </el-menu-item>
-          <el-menu-item index="3-2">现券</el-menu-item>
-          <el-menu-item index="3-3">开基</el-menu-item>
-          <el-menu-item index="3-4">开户/销户</el-menu-item>
+          <el-menu-item index="3-2">案例记录</el-menu-item>
+          <el-menu-item index="3-3">政策法规</el-menu-item>
         </el-submenu>
         <el-menu-item index="4">通知</el-menu-item>
         <el-submenu index="5">

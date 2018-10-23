@@ -190,7 +190,6 @@
                   message: '删除成功!'
               })
             });
-          console.log(2);
         }).catch(()=> {
           this.$message({
             type: 'info',

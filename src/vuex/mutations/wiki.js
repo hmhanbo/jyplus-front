@@ -24,68 +24,32 @@ export default {
       }
     });
   },
-  
-  //删除笔记Home提交
-  delClickHander(state, params) {
-    state.delNoteInfo = params.obj; //将要删除的对象同步到state状态delNoteInfo,让删除的组件显示这个对象的信息
-    state.delnoteNextId = params.id;
-    state.noteDelShow = true;
-  },
-  //取消删除 delete组件commit
-  cancelHander(state) {
-    state.noteDelShow = false;
-    state.delNoteInfo = {};
-  },
-  //确定删除
-  isdelHander(state) {
-    //保持 allList和dataList是同步的数据状态
-    state.dataList.forEach(item => {
-      if (item.id == state.delNoteInfo.pid) {
-        item.children = item.children.filter(el => el !== state.delNoteInfo)
+  //删除文章
+  delNote(state, id){
+
+    for(var i = 0; i<state.dataList.length; i++){
+      if(state.dataList[i].id ==id){
+        // console.log(state.dataList)
+        state.dataList.splice(i,1)
       }
-    });
-    // 搜索过滤后的数据删除当中要删除的对象
-    if (state.findNotesList.length > 0) {
-      state.findNotesList = state.findNotesList.filter(item => item !== state.delNoteInfo);
     }
-    //在详情笔记本列表中删除对象
-    if (state.joinNoteList.length >= 0) {
-      state.joinNoteList = state.joinNoteList.filter(item => item !== state.delNoteInfo);
-    }
-    // 标签组件列表删除对象
-    if (state.tagAllList.length > 0) {
-      state.tagAllList = state.tagAllList.filter(item => item !== state.delNoteInfo);
-    }
+    // state.dataList.forEach(item => {
+    //   if (item.id == id) {
+    // state.dataList=state.dataList.filter(item => item.id !== id)// item.remove(item)
+    //   }
+    // });
 
-    //将删除的对象同步到tipsuccessInfo中
-    state.tipsuccessInfo = {
-      objname: state.delNoteInfo.title,
-      tip: '已成功删除笔记',
-    };
-    state.tipsuccessState = false; //先隐藏,再显示
-    //通过调用getters中的方法,将dataList第几阶段中的每条笔记同步到allList
     state.allList = this.getters.tBallList;
-    state.noteDelShow = false;
   },
-
+  
 
   // 新建笔记 完成
+  // impression版本中，dataList是指包含笔记本的数组。新建笔记时选定了笔记本，所以dataList的赋值办法较复杂，在这里省略
   addNotes(state, params) {
-    state.dataList.forEach(item => {
-      if (item.id == params.id) {
-        item.children.unshift(params.obj);
-      }
-    });
+    state.dataList.unshift(params);
     state.allList = this.getters.tBallList;
 
   },
-
-
-  // 修改笔记内容详情的margin-left 设置为0
-  yinLeftHander(state) {
-    state.yinxdetWidth = true;
-  },
-
 
   //当点击textarea 和 title区域,隐藏快捷方式栏
   closeQuickbox(state) {
@@ -99,45 +63,9 @@ export default {
     state.navState = 1;
   },
 
-  //笔记列表删除完了
-  deleteAll(state) {
-    state.notelistNumber = true;
-  },
-  // 笔记列表中不为空
-  showNoteList(state) {
-    state.notelistNumber = false;
-  },
-
-  //组件显示的笔记信息对象
-  infoHander(state, params) {
-    state.noteInfos = params.obj;
-    state.information = true; //展示的组件显示出来
-  },
-  // 保存笔记信息的 url 作者信息更改
-  saveHander(state, params) {
-    state.allList.forEach(item => {
-      if (item.id == params.id) {
-        item.url = params.url;
-        item.author = params.author;
-      }
-    });
-    state.information = false;
-  },
-
-  // 选项列表显示
-  selectShowHander(state) {
-    state.selectDown = !state.selectDown;
-  },
 
   /*-----------------将Home组件中展示的数据,同步到vuex状态-----------------------------*/
   notecontent(state, obj) {
     state.noteContent = obj;
   },
-
-
-  //修改navState
-  changeNavState(state, index) {
-    state.navState = index;
-  },
-
 }
